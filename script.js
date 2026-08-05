@@ -30,7 +30,7 @@
     }
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", isDark ? "#1c0710" : "#3A0519");
+      ?.setAttribute("content", isDark ? "#1D1710" : "#E2DAC5");
   }
 
   // Initial theme: saved > system preference
@@ -154,5 +154,38 @@
         statObserver.observe(el);
       });
     }
+  }
+
+  /* --------------------------------------------------------
+     5. RAIL INDEX — highlight the active section link
+     -------------------------------------------------------- */
+  const navLinks = document.querySelectorAll(".rail-nav a[href^='#']");
+  const navSections = Array.from(navLinks)
+    .map(function (link) {
+      return document.getElementById(link.getAttribute("href").slice(1));
+    })
+    .filter(Boolean);
+
+  if (navLinks.length && navSections.length && "IntersectionObserver" in window) {
+    const navObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          const link = document.querySelector(
+            '.rail-nav a[href="#' + entry.target.id + '"]',
+          );
+          if (!link) return;
+          if (entry.isIntersecting) {
+            navLinks.forEach(function (l) {
+              l.classList.remove("active");
+            });
+            link.classList.add("active");
+          }
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+    navSections.forEach(function (el) {
+      navObserver.observe(el);
+    });
   }
 })();
